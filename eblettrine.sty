@@ -1,0 +1,22 @@
+\ProvidesPackage{eblettrine}
+\RequirePackage{fontspec}
+\RequirePackage{lettrine}
+\RequirePackage[svgnames]{xcolor}
+
+\newcommand{\EBLettrineBackFontname}{EBGaramondInitialsF1}
+\newcommand{\EBLettrineFrontFontname}{EBGaramondInitialsF2}
+
+\newcommand{\EBLettrineBackColor}{black}
+\newcommand{\EBLettrineFrontColor}{Crimson}
+
+\newfontfamily\EBLettrineBackFont{\EBLettrineBackFontname}
+\newfontfamily\EBLettrineFrontFont{\EBLettrineFrontFontname}
+
+\newcommand{\eblettrine}[3][]{%
+\renewcommand{\LettrineFontHook}{\EBLettrineBackFont}%
+\lettrine[#1]{%
+\rlap{\color{\EBLettrineBackColor} #2}%
+     {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}}{#3}%
+}
+
+
