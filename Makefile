@@ -11,7 +11,7 @@ LICENSE       = free
 FREEVERSION   = lppl
 FILE          = $(CONTRIBUTION).tar.gz
 
-SOURCEFILES   = $(CONTRIBUTION).dtx $(CONTRIBUTION).ins coloredlettrine-example.tex
+SOURCEFILES   = $(CONTRIBUTION).dtx $(CONTRIBUTION).ins coloredlettrine-example.tex lettrine.cfg
 PKGFILES      = $(CONTRIBUTION).sty
 DOCFILES      = $(CONTRIBUTION).pdf coloredlettrine-example.pdf
 
