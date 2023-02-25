@@ -144,6 +144,7 @@
 \RequirePackage{fontspec}
 \RequirePackage{lettrine}
 \RequirePackage[svgnames]{xcolor}
+\RequirePackage{xstring, xifthen, xfp}
 %    \end{macrocode}
 %
 % \begin{macro}{\EBLettrineBackFontname}
@@ -159,6 +160,11 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\EBLettrineFrontFontname}
+%    \begin{macrocode}
+\newcommand{\EBLettrineFullFontname}{EBGaramondInitials}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\EBLettrineBackColor}
 %    \begin{macrocode}
@@ -176,6 +182,16 @@
 %    \begin{macrocode}
 \newfontfamily\EBLettrineBackFont{\EBLettrineBackFontname}
 \newfontfamily\EBLettrineFrontFont{\EBLettrineFrontFontname}
+\newfontfamily\EBLettrineFullFont{\EBLettrineFullFontname}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newcommand{\shallFirstLineBeFilled}{0}
+\newcommand{\fillFirstLine}{\renewcommand{\shallFirstLineBeFilled}{1}}
+\newcommand{\dontFillFirstLine}{\renewcommand{\shallFirstLineBeFilled}{0}}
+\newcommand{\afterInitial}{}
+\newcommand{\LhangInPt}{\fpeval{\LettrineWidth * \DefaultLhang}pt}
+\newcommand{\firstLineWidth}{\fpeval{\columnwidth - \LettrineWidth - \DefaultFindent + \LhangInPt +0.001}pt}
 %    \end{macrocode}
 %
 % \begin{macro}{\coloredlettrine}
@@ -192,9 +208,42 @@
 % \end{macro}
 %
 %    \begin{macrocode}
-\lettrine[#1]{%
-\rlap{\color{\EBLettrineBackColor} #2}%
-     {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}}{#3}%
+\ifthenelse{\shallFirstLineBeFilled > 0}{%
+  \renewcommand{\afterInitial}{\makebox[\firstLineWidth][s]{#3}}
+}{%
+  \renewcommand{\afterInitial}{#3}
+}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\givenString{#2}
+\StrLen{\givenString}[\numOfChars]
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifthenelse{\numOfChars > 1}{%
+    \coloredlettrinewithquote{#1}{#2}{\afterInitial}%
+}{%
+    \lettrine[#1]{%
+        \rlap{\color{\EBLettrineBackColor} #2}%
+        {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}%
+    }{\afterInitial}%
+}
+}%
+%    \end{macrocode}
+%    \begin{macrocode}
+\newcommand{\clrlet}{\coloredlettrine}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newcommand{\coloredlettrinewithquote}[3]{%
+    \StrRight{#2}{1}[\theletter]%
+    \StrLeft{#2}{1}[\thequotechar]%
+    \lettrine[#1,]{%
+        {\EBLettrineFullFont\thequotechar}%
+        \rlap{\color{\EBLettrineBackColor}\theletter}%
+        {\EBLettrineFrontFont\color{\EBLettrineFrontColor}\theletter}%
+    }{#3}%
 }
 %    \end{macrocode}
 %
