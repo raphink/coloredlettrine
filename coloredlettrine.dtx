@@ -144,7 +144,7 @@
 \RequirePackage{fontspec}
 \RequirePackage{lettrine}
 \RequirePackage[svgnames]{xcolor}
-\RequirePackage{xstring, xifthen, xfp}
+\RequirePackage{xstring, xfp}
 %    \end{macrocode}
 %
 % \begin{macro}{\EBLettrineBackFontname}
@@ -186,9 +186,10 @@
 %    \end{macrocode}
 %
 %    \begin{macrocode}
-\newcommand{\shallFirstLineBeFilled}{0}
-\newcommand{\fillFirstLine}{\renewcommand{\shallFirstLineBeFilled}{1}}
-\newcommand{\dontFillFirstLine}{\renewcommand{\shallFirstLineBeFilled}{0}}
+\newif\iffirstLineFilled \firstLineFilledfalse
+\newcommand{\fillFirstLine}{\firstLineFilledtrue}
+\newcommand{\dontFillFirstLine}{\firstLineFilledfalse}
+%
 \newcommand{\afterInitial}{}
 \newcommand{\LhangInPt}{\fpeval{\LettrineWidth * \DefaultLhang}pt}
 \newcommand{\firstLineWidth}{\fpeval{\columnwidth - \LettrineWidth - \DefaultFindent + \LhangInPt +0.001}pt}
@@ -208,11 +209,11 @@
 % \end{macro}
 %
 %    \begin{macrocode}
-\ifthenelse{\shallFirstLineBeFilled > 0}{%
+\iffirstLineFilled
   \renewcommand{\afterInitial}{\makebox[\firstLineWidth][s]{#3}}
-}{%
+\else
   \renewcommand{\afterInitial}{#3}
-}%
+\fi
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -221,14 +222,14 @@
 %    \end{macrocode}
 %
 %    \begin{macrocode}
-\ifthenelse{\numOfChars > 1}{%
+\ifnum\numOfChars>1%
     \coloredlettrinewithquote{#1}{#2}{\afterInitial}%
-}{%
+\else%
     \lettrine[#1]{%
         \rlap{\color{\EBLettrineBackColor} #2}%
         {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}%
     }{\afterInitial}%
-}
+\fi
 }%
 %    \end{macrocode}
 %    \begin{macrocode}
