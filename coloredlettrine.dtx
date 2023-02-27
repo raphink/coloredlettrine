@@ -238,12 +238,15 @@
 %
 %    \begin{macrocode}
 \newcommand{\coloredlettrinewithquote}[3]{%
-    \StrRight{#2}{1}[\theletter]%
-    \StrLeft{#2}{1}[\thequotechar]%
+    \StrRight{#2}{1}[\theLetter]%
+    \newcount\charsMinusOne
+    \charsMinusOne = \numOfChars
+    \advance\charsMinusOne by -1
+    \StrLeft{#2}{\charsMinusOne}[\theOtherChars]%
     \lettrine[#1,]{%
-        {\EBLettrineFullFont\thequotechar}%
-        \rlap{\color{\EBLettrineBackColor}\theletter}%
-        {\EBLettrineFrontFont\color{\EBLettrineFrontColor}\theletter}%
+        {\EBLettrineFullFont\theOtherChars}%
+        \rlap{\color{\EBLettrineBackColor}\theLetter}%
+        {\EBLettrineFrontFont\color{\EBLettrineFrontColor}\theLetter}%
     }{#3}%
 }
 %    \end{macrocode}
