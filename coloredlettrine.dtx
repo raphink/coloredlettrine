@@ -223,7 +223,7 @@
 %
 %    \begin{macrocode}
 \ifnum\numOfChars>1%
-    \coloredlettrinewithquote{#1}{#2}{\afterInitial}%
+    \coloredlettrinewithhangingpunctuation{#1}{#2}{\afterInitial}%
 \else%
     \lettrine[#1]{%
         \rlap{\color{\EBLettrineBackColor} #2}%
@@ -237,7 +237,7 @@
 %    \end{macrocode}
 %
 %    \begin{macrocode}
-\newcommand{\coloredlettrinewithquote}[3]{%
+\newcommand{\coloredlettrinewithhangingpunctuation}[3]{%
     \StrRight{#2}{1}[\theLetter]%
     \newcount\charsMinusOne
     \charsMinusOne = \numOfChars
