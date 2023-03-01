@@ -45,7 +45,8 @@
 %</driver>
 % \fi
 %
-% \CheckSum{30}
+% \CheckSum{0}
+% \MaybeStop
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -104,6 +105,17 @@
 % you can use the settings files described in the \texttt{lettrine} package.
 % This package contains an example making use of a \texttt{lettrine.cfg} file.
 %
+% If there is a punctuation mark before the initial, you can write it with the
+% letter in the first argument: \verb!\colouredlettrine{"T}{his is an example"}!
+% This feature has been added specifically for the EB Garamond Initials font,
+% where quotation marks and inverted question and exclamation marks with a width
+% of zero have been implemented to set hanging punctuation. If you are using a
+% different font, or want to set punctuation or something else in a different way,
+% you can use the \emph{ante} option inherited from the \verb!\lettrine! command.
+%
+% \DescribeMacro{\clrlet}
+%
+% This is a short alias for \verb!\coloredlettrine!.
 %
 % \section{Settings}
 %
@@ -130,6 +142,19 @@
 % Set the color used to typeset the foreground letters,
 % as passed to \texttt{xcolor}.
 %
+% \DescribeMacro{\fillFirstLine}
+%
+% When this macro is called, the second argument of all
+% subsequent \verb!\colouredlettrine! calls is streched to
+% the remaining linewidth (technically columnwidth),
+% until \verb!\dontFillFirstLine! is called. This is useful
+% if you want the entire first line after the initial to be
+% set in a certain way (small caps by default).
+% This macro has no arguments.
+%
+% \DescribeMacro{\dontFillFirstLine}
+%
+% This macro reverses the effect of \verb!\fillFirstLine!, so that the text in the second argument is not streched.
 %
 % \StopEventually{}
 %
@@ -144,6 +169,7 @@
 \RequirePackage{fontspec}
 \RequirePackage{lettrine}
 \RequirePackage[svgnames]{xcolor}
+\RequirePackage{xstring, xfp}
 %    \end{macrocode}
 %
 % \begin{macro}{\EBLettrineBackFontname}
@@ -159,6 +185,11 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\EBLettrineFullFontname}
+%    \begin{macrocode}
+\newcommand{\EBLettrineFullFontname}{EBGaramondInitials}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\EBLettrineBackColor}
 %    \begin{macrocode}
@@ -176,6 +207,28 @@
 %    \begin{macrocode}
 \newfontfamily\EBLettrineBackFont{\EBLettrineBackFontname}
 \newfontfamily\EBLettrineFrontFont{\EBLettrineFrontFontname}
+\newfontfamily\EBLettrineFullFont{\EBLettrineFullFontname}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newif\iffirstLineFilled \firstLineFilledfalse
+%    \end{macrocode}
+% \begin{macro}{\fillFirstLine}
+%    \begin{macrocode}
+\newcommand{\fillFirstLine}{\firstLineFilledtrue}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\dontFillFirstLine}
+% \begin{macrocode}
+\newcommand{\dontFillFirstLine}{\firstLineFilledfalse}
+%    \end{macrocode}
+% \end{macro}
+
+%
+%    \begin{macrocode}
+\newcommand{\afterInitial}{}
+\newcommand{\LhangInPt}{\fpeval{\LettrineWidth * \DefaultLhang}pt}
+\newcommand{\firstLineWidth}{\fpeval{\columnwidth - \LettrineWidth - \DefaultFindent + \LhangInPt +0.001}pt}
 %    \end{macrocode}
 %
 % \begin{macro}{\coloredlettrine}
@@ -192,11 +245,50 @@
 % \end{macro}
 %
 %    \begin{macrocode}
-\lettrine[#1]{%
-\rlap{\color{\EBLettrineBackColor} #2}%
-     {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}}{#3}%
+\iffirstLineFilled
+  \renewcommand{\afterInitial}{\makebox[\firstLineWidth][s]{#3}}
+\else
+  \renewcommand{\afterInitial}{#3}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\givenString{#2}
+\StrLen{\givenString}[\numOfChars]
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\ifnum\numOfChars>1%
+    \coloredlettrinewithhangingpunctuation{#1}{#2}{\afterInitial}%
+\else%
+    \lettrine[#1]{%
+        \rlap{\color{\EBLettrineBackColor} #2}%
+        {\EBLettrineFrontFont\color{\EBLettrineFrontColor} #2}%
+    }{\afterInitial}%
+\fi
+}%
+%    \end{macrocode}
+%    \begin{macrocode}
+\newcommand{\coloredlettrinewithhangingpunctuation}[3]{%
+    \StrRight{#2}{1}[\theLetter]%
+    \newcount\charsMinusOne
+    \charsMinusOne = \numOfChars
+    \advance\charsMinusOne by -1
+    \StrLeft{#2}{\charsMinusOne}[\theOtherChars]%
+    \lettrine[#1,]{%
+        {\EBLettrineFullFont\theOtherChars}%
+        \rlap{\color{\EBLettrineBackColor}\theLetter}%
+        {\EBLettrineFrontFont\color{\EBLettrineFrontColor}\theLetter}%
+    }{#3}%
 }
 %    \end{macrocode}
+%
+% \begin{macro}{\clrlet}
+%    \begin{macrocode}
+\newcommand{\clrlet}{\coloredlettrine}
+%    \end{macrocode}
+% \end{macro}
+%
 %
 % \iffalse
 %</package>
